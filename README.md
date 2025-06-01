@@ -1,47 +1,54 @@
-# ArcusX Project
+# React + TypeScript + Vite
 
-This repository contains the source code of the official ArcusX web application.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 🚀 About ArcusX
+Currently, two official plugins are available:
 
-ArcusX is a Web3 task-based protocol built to empower Latin American users through decentralized microjobs, fast USDC payments, and a reputation-based reward system. We're bridging access to global digital work with simple, scalable, and transparent infrastructure.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## 🛠️ Tech Stack
+## Expanding the ESLint configuration
 
-- **Frontend**: React.js + TypeScript  
-- **Build Tool**: Vite + SWC for fast compilation  
-- **Blockchain**: Stellar/Base network for payments and user attestations  
-- **Assets**: Circle USDC for settlements  (SOON!!)
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## 📚 Documentation
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
-Full documentation and whitepaper: [https://docs.arcusx.one](https://docs.arcusx.one)
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## 📂 Structure
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-- `/src` — Main website codebase
-- `/src/images` — Logos & illustrations
-- `/src/components` — Reusable UI blocks
-
-## 🔗 Connect
-
-Follow our updates:
-- Twitter: [@arcusx_](https://twitter.com/arcusx_)
-- Website: [https://arcusx.one](https://arcusx.one)
-
-## 🤝 PROYECT OWNERSHIP (ARCUSX):
-BRUNO ANDRES MIRANDA ESCOBAR
-
-## ⚠️ Legal Disclaimer
-
-All source code, design, and intellectual property within this repository are the exclusive property of ArcusX and its founding team. **Unauthorized use, reproduction, distribution, or modification of any part of this project is strictly prohibited.**
-
-By accessing this repository, you acknowledge and agree that:
-
-- You are not permitted to reuse any part of the codebase or materials without explicit, written permission from the ArcusX team.
-- Any unauthorized usage will be considered **a direct violation of intellectual property rights**.
-- **Legal action will be pursued to the fullest extent of the law**, including but not limited to civil lawsuits and claims for damages.
-
-We take the protection of our work seriously.
-
-For licensing inquiries, contact: [contact@arcusx.one](mailto:contact@arcusx.one)
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
+```
