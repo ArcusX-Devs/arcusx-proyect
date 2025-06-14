@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import '../css/Register.css';
+import { authService } from '../services/authService';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,9 @@ const Register = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,10 +25,37 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí irá la lógica de registro
-    console.log('Datos del formulario:', formData);
+    setError('');
+    setLoading(true);
+
+    try {
+      // Validaciones
+      if (formData.password !== formData.confirmPassword) {
+        setError('Las contraseñas no coinciden');
+        return;
+      }
+
+      if (formData.password.length < 6) {
+        setError('La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+
+      // Registrar usuario
+      await authService.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Redirigir al login después del registro exitoso
+      navigate('/login');
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Error al registrar usuario');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +89,7 @@ const Register = () => {
         <div className="register-right">
           <form onSubmit={handleSubmit} className="register-form">
             <h2>Crear Cuenta</h2>
+            {error && <div className="register-error">{error}</div>}
             <div className="form-group">
               <div className="input-icon">
                 <FaUser />
@@ -69,6 +101,7 @@ const Register = () => {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
             </div>
             <div className="form-group">
@@ -82,6 +115,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
             </div>
             <div className="form-group">
@@ -95,11 +129,13 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -115,17 +151,19 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={loading}
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            <button type="submit" className="register-button">
-              Registrarse
+            <button type="submit" className="register-button" disabled={loading}>
+              {loading ? 'Registrando...' : 'Registrarse'}
             </button>
             <p className="login-link">
               ¿Ya tienes una cuenta? <Link to="/login">Iniciar Sesión</Link>

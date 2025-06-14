@@ -427,6 +427,9 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .task-card::before {
@@ -451,6 +454,11 @@
   opacity: 1;
 }
 
+.task-card-content {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}
+
 .task-header {
   display: flex;
   justify-content: space-between;
@@ -460,11 +468,16 @@
 }
 
 .task-header h3 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
+  margin: 0 1rem 0.5rem 0;
   color: var(--white);
-  font-weight: 600;
-  line-height: 1.4;
-  flex: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .task-difficulty {
@@ -478,29 +491,34 @@
 }
 
 .task-difficulty.fácil {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
 }
 
 .task-difficulty.intermedio {
-  background: rgba(246, 118, 35, 0.15);
-  color: var(--primary-orange);
-  border: 1px solid rgba(246, 118, 35, 0.3);
+  background-color: #FFC107;
+  color: #fff;
+  border: none;
 }
 
 .task-difficulty.difícil {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background-color: #f44336;
+  color: #fff;
+  border: none;
 }
 
 .task-description {
+  font-size: 0.9rem;
   color: var(--text-muted);
-  margin-bottom: 1.75rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  min-height: 3.2rem;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .task-details {
@@ -1650,60 +1668,7 @@
   border-color: rgba(40, 192, 240, 0.5);
 }
 
-/* Ajuste para el dropdown de categorías */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.section-header h2 {
-  font-size: 1.5rem;
-  color: #fff;
-}
-
-.filter-dropdown {
-  background: rgba(7, 35, 60, 0.95);
-  border: 1px solid rgba(40, 192, 240, 0.3);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  color: #fff;
-  font-size: 0.95rem;
-  min-width: 200px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2328c0f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 16px;
-  padding-right: 2.5rem;
-}
-
-.filter-dropdown:hover {
-  background-color: rgba(7, 35, 60, 0.8);
-  border-color: rgba(40, 192, 240, 0.5);
-}
-
-.filter-dropdown:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(40, 192, 240, 0.2);
-}
-
-.filter-dropdown option {
-  background-color: rgba(7, 35, 60, 0.95);
-  color: #fff;
-  padding: 0.75rem;
-}
-
-@media (max-width: 1200px) {
-  .tasks-in-progress-container {
-    max-width: 95%;
-  }
-}
-
+/* Ajuste para el diseño de tarjetas en pantallas más pequeñas si es necesario */
 @media (max-width: 768px) {
   .tasks-in-progress-container {
     padding: 1rem;
@@ -1713,7 +1678,6 @@
   .tasks-in-progress-grid {
     grid-template-columns: minmax(250px, 1fr);
     gap: 1rem;
-    padding: 0;
   }
 
   .task-card-progress {
@@ -1878,5 +1842,213 @@
     font-size: 1.25rem;
     margin-bottom: 1rem;
   }
+}
+
+.create-task-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(90deg, #28c0f0, #1180b3);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-task-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+.create-task-button h3 {
+  color: white;
+  font-size: 1.5rem;
+}
+.create-task-button svg {
+  margin: 0;
+  width: 60%;
+  height: 60%;
+  color: white;
+  fill: white;
+  stroke: white;
+}
+
+@media (max-width: 768px) {
+  .create-task-button {
+    right: 20px;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+   .create-task-button svg {
+    width: 70%;
+    height: 70%;
+  }
+  .create-task-button h3 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Estilos para la sección Administrar Tareas */
+.manage-tasks-container {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.user-tasks-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.user-task-item {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-task-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.user-task-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.user-task-item:hover::before {
+    opacity: 1;
+}
+
+.user-task-item h3 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--white);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.user-task-item p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.proposal-count {
+  font-size: 0.95rem;
+  color: var(--primary-blue);
+  font-weight: 700;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para el botón de crear tarea en esta sección */
+.manage-tasks-container .create-task-button {
+    position: static;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.manage-tasks-container .create-task-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(40, 192, 240, 0.3);
+}
+
+.manage-tasks-container .create-task-button h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--white);
+}
+
+.manage-tasks-container .create-task-button svg {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--white);
+    fill: var(--white);
+    stroke: var(--white);
+    width: auto;
+    height: auto;
+}
+
+/* Ajuste para el diseño de tarjetas en pantallas más pequeñas si es necesario */
+@media (max-width: 768px) {
+  .user-tasks-list {
+    grid-template-columns: minmax(250px, 1fr);
+    gap: 1rem;
+  }
+
+  .user-task-item {
+    padding: 1.25rem;
+  }
+
+  .manage-tasks-container .create-task-button {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+  }
+   .manage-tasks-container .create-task-button h3 {
+       font-size: 0.9rem;
+   }
+    .manage-tasks-container .create-task-button svg {
+       font-size: 1rem;
+   }
 }
 

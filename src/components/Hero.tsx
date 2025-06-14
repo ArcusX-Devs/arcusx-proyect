@@ -355,10 +355,10 @@ const Hero = () => {
               </div>
               <div className="team-card">
                 <div className="team-member-image">
-                  <img src={roqueImg} alt="Roque Cea" className="member-img" />
+                  <img src={roqueImg} alt="Vicente Vera" className="member-img" />
                 </div>
                 <div className="member-info">
-                  <h3>Roque Cea</h3>
+                  <h3>Vicente Vera</h3>
                   <p className="member-role">COO</p>
                   <p className="member-bio">Experto en operaciones y coordinación, asegurando el funcionamiento eficiente de ArcusX.</p>
                   <div className="hero-buttons">

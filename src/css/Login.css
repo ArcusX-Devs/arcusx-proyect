@@ -98,7 +98,7 @@
   position: relative;
 }
 
-.form-group label {
+.form-group label h4{
   display: block;
   color: #1a1f2c;
   font-size: 0.9rem;
@@ -125,7 +125,7 @@
 }
 
 .form-group input::placeholder {
-  color: #94a3b8;
+  color: #6a7585a1;
 }
 
 .form-options {
