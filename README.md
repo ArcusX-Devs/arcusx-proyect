@@ -1,5 +1,4 @@
-# ArcusX ProjectAdd commentMore actions
-
+# ArcusX Project
 This repository contains the source code of the official ArcusX web application.
 
 ## 🚀 About ArcusX
