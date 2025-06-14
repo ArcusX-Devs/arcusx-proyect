@@ -1,0 +1,191 @@
+.apply-task-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: #0b1b2f; /* Fondo oscuro similar al dashboard */
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #28c0f0;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #1180b3;
+}
+
+.apply-task-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 2rem;
+}
+
+.task-details-card,
+.application-form-card {
+  background-color: #1a2a3d; /* Fondo de tarjeta oscuro */
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  flex: 1;
+  min-width: 300px;
+}
+
+.task-details-card h2 {
+  color: #28c0f0;
+  margin-bottom: 0.5rem;
+}
+
+.task-details-card .task-difficulty {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.task-difficulty.fácil {
+  background-color: #4CAF50;
+}
+
+.task-difficulty.intermedio {
+  background-color: #FFC107;
+}
+
+.task-difficulty.difícil {
+  background-color: #f44336;
+}
+
+.task-description-full {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  color: #e1e1e1;
+  word-wrap: break-word; /* Rompe palabras largas si es necesario */
+  overflow-wrap: break-word; /* Versión estándar de word-wrap */
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-top: 1rem; /* Espacio arriba de los detalles */
+  border-top: 1px solid #3a4a5a; /* Separador visual */
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  margin-bottom: 0.2rem;
+}
+
+.meta-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+
+.application-form-card h3 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #28c0f0;
+}
+
+.application-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.application-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #e1e1e1;
+}
+
+.application-form input[type="text"],
+.application-form input[type="number"],
+.application-form input[type="url"],
+.application-form textarea,
+.application-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #3a4a5a; /* Borde oscuro */
+  border-radius: 5px;
+  background-color: #0f1e2d; /* Fondo de input oscuro */
+  color: #fff;
+  font-size: 1rem;
+}
+
+.application-form textarea {
+  resize: vertical;
+  min-height: 150px; /* Aumentar altura del textarea */
+}
+
+.application-form input::placeholder,
+.application-form textarea::placeholder {
+  color: #b0b0b0;
+}
+
+.application-form button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(90deg, #28c0f0, #1180b3); /* Gradiente similar al dashboard */
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.application-form button[type="submit"]:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #4CAF50;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.error-message {
+  color: #f44336;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .apply-task-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .task-details-card,
+  .application-form-card {
+    min-width: unset;
+  }
+} 

@@ -1,0 +1,108 @@
+.create-task-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: #0b1b2f; /* Fondo oscuro similar al dashboard */
+  min-height: 100vh;
+  color: #fff;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #28c0f0;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #1180b3;
+}
+
+.create-task-form-card {
+  background-color: #1a2a3d; /* Fondo de tarjeta oscuro */
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px; /* Ancho máximo del formulario */
+  margin-top: 2rem;
+}
+
+.create-task-form-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #28c0f0;
+}
+
+.create-task-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.create-task-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #e1e1e1;
+}
+
+.create-task-form input[type="text"],
+.create-task-form input[type="number"],
+.create-task-form textarea,
+.create-task-form select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #3a4a5a; /* Borde oscuro */
+  border-radius: 5px;
+  background-color: #0f1e2d; /* Fondo de input oscuro */
+  color: #fff;
+  font-size: 1rem;
+}
+
+.create-task-form input[type="text"]::placeholder,
+.create-task-form input[type="number"]::placeholder,
+.create-task-form textarea::placeholder {
+  color: #b0b0b0;
+}
+
+.create-task-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.create-task-form button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(90deg, #28c0f0, #1180b3); /* Gradiente similar al dashboard */
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+.create-task-form button[type="submit"]:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #4CAF50;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.error-message {
+  color: #f44336;
+  margin-bottom: 1rem;
+  text-align: center;
+} 

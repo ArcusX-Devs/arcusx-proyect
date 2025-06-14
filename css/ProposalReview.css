@@ -1,0 +1,164 @@
+/* Estilos para la página de revisión de propuestas */
+.proposal-review-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-light);
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--primary-blue);
+  margin-bottom: 2rem;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: var(--secondary-blue);
+}
+
+.back-button svg {
+  font-size: 1.2rem;
+}
+
+.task-details-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+}
+
+.task-details-card h2 {
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-bottom: 0.8rem;
+}
+
+.task-details-card h3 {
+  font-size: 1.1rem;
+  color: var(--primary-blue);
+  margin-bottom: 0.5rem;
+}
+
+.task-details-card p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  /* Propiedades para manejar texto largo */
+  word-wrap: break-word; /* Romper palabras largas */
+  overflow-wrap: break-word; /* Sinónimo de word-wrap */
+  /* Si quieres limitar a un número de líneas fijo, puedes añadir esto: */
+  /* display: -webkit-box; */
+  /* -webkit-line-clamp: 5; /* Por ejemplo, 5 líneas */
+  /* -webkit-box-orient: vertical; */
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+}
+
+.proposals-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.proposal-item-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.proposal-item-card h3 {
+  font-size: 1.1rem;
+  color: var(--white);
+  margin-bottom: 0.8rem;
+}
+
+.proposal-item-card p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.proposal-item-card a {
+  color: var(--secondary-blue);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.proposal-item-card a:hover {
+  color: var(--primary-blue);
+  text-decoration: underline;
+}
+
+.select-proposal-button {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.select-proposal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(40, 192, 240, 0.3);
+}
+
+.select-proposal-button:disabled {
+  background: #5a5a5a;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.error-message {
+  color: var(--primary-orange); /* O un color rojo para errores */
+  background: rgba(246, 118, 35, 0.1); /* Fondo sutil */
+  border: 1px solid var(--primary-orange);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+/* Puedes añadir media queries para responsive design si es necesario */
+@media (max-width: 768px) {
+  .proposal-review-container {
+    padding: 1rem;
+  }
+
+  .task-details-card,
+  .proposal-item-card {
+    padding: 1rem;
+  }
+
+  .task-details-card h2 {
+    font-size: 1.3rem;
+  }
+
+  .proposal-item-card h3 {
+    font-size: 1rem;
+  }
+
+  .select-proposal-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
