@@ -285,14 +285,18 @@
   transition: all 0.3s ease;
   z-index: 10;
 }
-
+.back-button span {
+  color: white;
+}
 .back-button:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateX(-5px);
+  color: white;
 }
 
 .back-button svg {
   font-size: 1rem;
+  color: white;
 }
 
 @media (max-width: 768px) {
@@ -314,5 +318,6 @@
     left: 1rem;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
+    color: white;
   }
 } 

@@ -1,0 +1,119 @@
+.supervise-task-container {
+    padding: 20px;
+    background-color: #1a202c; /* Color de fondo oscuro similar al dashboard */
+    color: #e2e8f0; /* Color de texto claro */
+    min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la ventana */
+    font-family: 'Arial', sans-serif; /* Fuente legible */
+}
+
+.supervise-task-container h2, .supervise-task-container h3 {
+    color: #4299e1; /* Color de encabezado brillante */
+    margin-bottom: 15px;
+}
+
+.task-details-section,
+.chat-section,
+.file-exchange-section {
+    background-color: #2d3748; /* Fondo ligeramente más claro para secciones */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.messages-area,
+.files-list {
+    border: 1px solid #4a5568; /* Borde para áreas de contenido */
+    padding: 10px;
+    height: 200px; /* Altura fija para áreas de scroll */
+    overflow-y: auto; /* Habilitar scroll vertical */
+    margin-bottom: 10px;
+    background-color: #2d3748; /* Asegura que el fondo sea el mismo que la sección */
+}
+
+.message-input-area input[type="text"] {
+    width: calc(100% - 80px); /* Ancho ajustado para dejar espacio al botón */
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #4a5568;
+    border-radius: 4px;
+    background-color: #4a5568; /* Fondo del input */
+    color: #e2e8f0; /* Color de texto del input */
+}
+
+.message-input-area button,
+.upload-file-area button,
+.completion-buttons button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.message-input-area button,
+.upload-file-area button {
+     background-color: #4299e1; /* Color azul brillante */
+     color: white;
+}
+
+.message-input-area button:hover,
+.upload-file-area button:hover {
+    background-color: #3182ce; /* Azul más oscuro al pasar el ratón */
+}
+
+.completion-buttons button {
+    margin-right: 10px; /* Espacio entre los botones de confirmación */
+}
+
+.completion-buttons .btn-success {
+    background-color: #48bb78; /* Verde para confirmar */
+    color: white;
+}
+
+.completion-buttons .btn-success:hover {
+    background-color: #38a169; /* Verde más oscuro al pasar el ratón */
+}
+
+/* Estilos responsivos básicos (opcional) */
+@media (max-width: 768px) {
+    .supervise-task-container {
+        padding: 10px;
+    }
+    .message-input-area input[type="text"] {
+        width: calc(100% - 70px); /* Ajustar ancho en pantallas pequeñas */
+    }
+}
+
+/* Estilos para burbujas de chat */
+.message-bubble {
+    border-radius: 8px;
+    padding: 8px 12px;
+    max-width: 70%; /* Ancho máximo de las burbujas */
+    word-wrap: break-word; /* Romper palabras largas */
+}
+
+.my-message .message-bubble {
+    background-color: #4299e1; /* Azul para mensajes propios */
+    color: white;
+}
+
+.other-message .message-bubble {
+    background-color: #4a5568; /* Gris oscuro para mensajes de otros */
+    color: #e2e8f0; /* Texto claro */
+}
+
+/* Contenedor de cada mensaje para alineación */
+.message-container {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.my-message {
+    justify-content: flex-end; /* Alinear mensajes propios a la derecha */
+}
+
+.other-message {
+    justify-content: flex-start; /* Alinear mensajes de otros a la izquierda */
+} 

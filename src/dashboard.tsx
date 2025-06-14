@@ -1,658 +1,86 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaUser, FaTasks, FaWallet, FaChartLine, FaBell, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaUser, FaTasks, FaWallet, FaChartLine, FaBell, FaCog, FaSignOutAlt, FaPlus } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 import './css/dashboard.css';
 import arcusLogo from './images/arcus-logo.png';
+import axios from 'axios';
+import { API_URL } from './config/database';
+import React from 'react';
+
+interface UserData {
+  id: number;
+  username: string;
+  email: string;
+  // Agrega otros campos del usuario si existen en tu objeto de usuario
+}
+
+interface TaskData {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  currency: string;
+  difficulty: string;
+  category: string;
+  creator_username: string; // Nombre del usuario que creó la tarea
+  created_at: string;
+  subtitle: string;
+  status: string; // Añadir el estado de la tarea
+  proposal_count?: number; // Añadir campo para el conteo de propuestas (opcional inicialmente)
+  has_accepted_proposal?: boolean; // **Añadido de nuevo**
+  accepted_applicant_id?: number | null; // **Añadido de nuevo**
+}
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('tasks');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [fetchedTasks, setFetchedTasks] = useState<TaskData[]>([]); // Estado para las tareas de la API
+  const [loadingTasks, setLoadingTasks] = useState(true); // Estado de carga para las tareas
+  const [tasksError, setTasksError] = useState<string>(''); // Estado de error al cargar tareas
   
-  // Datos de ejemplo para el dashboard
+  // Nuevo estado para las tareas del usuario
+  const [userTasks, setUserTasks] = useState<TaskData[]>([]);
+  const [loadingUserTasks, setLoadingUserTasks] = useState(true);
+  const [userTasksError, setUserTasksError] = useState<string>('');
+  
+  // Nuevo estado para las tareas aceptadas por el usuario
+  const [acceptedTasks, setAcceptedTasks] = useState<TaskData[]>([]);
+  const [loadingAcceptedTasks, setLoadingAcceptedTasks] = useState(true);
+  const [acceptedTasksError, setAcceptedTasksError] = useState<string>('');
+  
+  // Nuevo estado para tareas completadas
+  const [completedTasksCount, setCompletedTasksCount] = useState<number>(0);
+  
+  // Obtener usuario logeado desde localStorage
+  const storedUser = localStorage.getItem('user');
+  const user: UserData | null = storedUser ? JSON.parse(storedUser) : null;
+  const [name, setName] = useState<string>(user?.username || '');
+  const [email, setEmail] = useState<string>(user?.email || '');
+  const [currentPassword, setCurrentPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string>('');
+  const [saveError, setSaveError] = useState<string>('');
+  
+  const navigate = useNavigate();
+  
   const userData = {
-    name: 'Usuario Ejemplo',
+    name: name,
     level: 3,
     experience: 75,
-    tasksCompleted: 5,
+    tasksCompleted: completedTasksCount,
     tasksAvailable: 60,
     notifications: 3,
     totalEarnings: 33.75
   };
   
   // Tareas de ejemplo
-  const tasks = [
-    {
-      id: 1,
-      title: 'Desarrollo de Smart Contract',
-      description: 'Crear un contrato inteligente para gestionar tokens NFT con características especiales',
-      reward: 0.015,
-      currency: 'ETH',
-      time: '2h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 2,
-      title: 'Diseño de UI para DApp',
-      description: 'Diseñar la interfaz de usuario para una aplicación descentralizada de finanzas',
-      reward: 150,
-      currency: 'XLM',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 3,
-      title: 'Optimización de Smart Contracts',
-      description: 'Optimizar el consumo de gas de contratos existentes',
-      reward: 25,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 4,
-      title: 'Creación de Contenido Web3',
-      description: 'Escribir artículos explicativos sobre tecnología blockchain y DeFi',
-      reward: 75,
-      currency: 'XLM',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Contenido'
-    },
-    {
-      id: 5,
-      title: 'Testing de Contratos',
-      description: 'Realizar pruebas exhaustivas de contratos inteligentes',
-      reward: 20,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Blockchain'
-    },
-    {
-      id: 6,
-      title: 'Diseño de Logo NFT',
-      description: 'Crear logos únicos para una colección de NFTs',
-      reward: 0.01,
-      currency: 'ETH',
-      time: '2h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 7,
-      title: 'Auditoría de Seguridad',
-      description: 'Realizar auditoría de seguridad en contratos inteligentes',
-      reward: 0.02,
-      currency: 'ETH',
-      time: '5h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 8,
-      title: 'Marketing en Discord',
-      description: 'Gestionar y moderar comunidad en Discord',
-      reward: 15,
-      currency: 'USDC',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Marketing'
-    },
-    {
-      id: 9,
-      title: 'Desarrollo Frontend Web3',
-      description: 'Implementar conexión con wallets y contratos',
-      reward: 0.012,
-      currency: 'ETH',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Desarrollo'
-    },
-    {
-      id: 10,
-      title: 'Creación de Memes',
-      description: 'Crear memes virales para redes sociales',
-      reward: 50,
-      currency: 'XLM',
-      time: '1h',
-      difficulty: 'Fácil',
-      category: 'Marketing'
-    },
-    {
-      id: 11,
-      title: 'Documentación Técnica',
-      description: 'Escribir documentación técnica para APIs blockchain',
-      reward: 18,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 12,
-      title: 'Diseño de Banner',
-      description: 'Crear banners para redes sociales y sitio web',
-      reward: 80,
-      currency: 'XLM',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Diseño'
-    },
-    {
-      id: 13,
-      title: 'Desarrollo de Token ERC20',
-      description: 'Implementar token personalizado con características especiales',
-      reward: 0.018,
-      currency: 'ETH',
-      time: '4h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 14,
-      title: 'Gestión de Redes Sociales',
-      description: 'Administrar perfiles en Twitter y LinkedIn',
-      reward: 16,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 15,
-      title: 'Diseño de Whitepaper',
-      description: 'Diseñar y maquetar whitepaper del proyecto',
-      reward: 0.011,
-      currency: 'ETH',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 16,
-      title: 'Testing de DApp',
-      description: 'Realizar pruebas de integración de la DApp',
-      reward: 22,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Desarrollo'
-    },
-    {
-      id: 17,
-      title: 'Creación de Tutorial',
-      description: 'Crear video tutorial sobre uso de la plataforma',
-      reward: 120,
-      currency: 'XLM',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 18,
-      title: 'Optimización de Gas',
-      description: 'Optimizar costos de gas en transacciones',
-      reward: 0.025,
-      currency: 'ETH',
-      time: '5h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 19,
-      title: 'Diseño de UI Components',
-      description: 'Crear biblioteca de componentes UI reutilizables',
-      reward: 28,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 20,
-      title: 'Community Management',
-      description: 'Gestionar y hacer crecer la comunidad',
-      reward: 100,
-      currency: 'XLM',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Marketing'
-    },
-    {
-      id: 21,
-      title: 'Análisis de Smart Contracts',
-      description: 'Realizar análisis de seguridad en contratos inteligentes existentes',
-      reward: 0.02,
-      currency: 'ETH',
-      time: '4h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 22,
-      title: 'Diseño de NFT Collection',
-      description: 'Crear diseños únicos para una colección de 100 NFTs',
-      reward: 0.025,
-      currency: 'ETH',
-      time: '5h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 23,
-      title: 'Desarrollo de Bot de Trading',
-      description: 'Implementar bot automatizado para trading en DEX',
-      reward: 0.03,
-      currency: 'ETH',
-      time: '6h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 24,
-      title: 'Creación de Stickers',
-      description: 'Diseñar pack de stickers para Telegram/Discord',
-      reward: 40,
-      currency: 'USDC',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Diseño'
-    },
-    {
-      id: 25,
-      title: 'Gestión de Comunidad Discord',
-      description: 'Moderar y gestionar comunidad de 1000+ miembros',
-      reward: 35,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 26,
-      title: 'Desarrollo de Dapp Gaming',
-      description: 'Crear juego simple basado en blockchain',
-      reward: 0.04,
-      currency: 'ETH',
-      time: '8h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 27,
-      title: 'Diseño de Emotes',
-      description: 'Crear set de emotes personalizados para Discord',
-      reward: 45,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 28,
-      title: 'Traducción de Documentación',
-      description: 'Traducir documentación técnica a español',
-      reward: 50,
-      currency: 'XLM',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 29,
-      title: 'Desarrollo de Marketplace NFT',
-      description: 'Implementar marketplace para trading de NFTs',
-      reward: 0.05,
-      currency: 'ETH',
-      time: '10h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 30,
-      title: 'Creación de Thumbnails',
-      description: 'Diseñar thumbnails para videos de YouTube',
-      reward: 30,
-      currency: 'USDC',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Diseño'
-    },
-    {
-      id: 31,
-      title: 'Optimización de Smart Contracts',
-      description: 'Optimizar consumo de gas en DEX',
-      reward: 0.035,
-      currency: 'ETH',
-      time: '6h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 32,
-      title: 'Diseño de Interfaz de Wallet',
-      description: 'Crear diseño UI/UX para wallet web3',
-      reward: 0.02,
-      currency: 'ETH',
-      time: '5h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 33,
-      title: 'Creación de Blog Posts',
-      description: 'Escribir artículos sobre DeFi y Web3',
-      reward: 40,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 34,
-      title: 'Desarrollo de Token Bridge',
-      description: 'Implementar puente entre dos blockchains',
-      reward: 0.06,
-      currency: 'ETH',
-      time: '12h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 35,
-      title: 'Diseño de Presentación',
-      description: 'Crear slides para pitch deck',
-      reward: 55,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 36,
-      title: 'Community Management Twitter',
-      description: 'Gestionar cuenta de Twitter del proyecto',
-      reward: 45,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 37,
-      title: 'Desarrollo de Staking Contract',
-      description: 'Implementar contrato de staking con rewards',
-      reward: 0.04,
-      currency: 'ETH',
-      time: '8h',
-      difficulty: 'Difícil',
-      category: 'Blockchain'
-    },
-    {
-      id: 38,
-      title: 'Diseño de Landing Page',
-      description: 'Crear diseño para página principal',
-      reward: 0.025,
-      currency: 'ETH',
-      time: '6h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 39,
-      title: 'Creación de Video Tutorial',
-      description: 'Producir video explicativo sobre el proyecto',
-      reward: 60,
-      currency: 'USDC',
-      time: '5h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 40,
-      title: 'Desarrollo de DAO',
-      description: 'Implementar sistema de gobernanza DAO',
-      reward: 0.07,
-      currency: 'ETH',
-      time: '15h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 41,
-      title: 'Diseño de Iconos',
-      description: 'Crear set de iconos para la plataforma',
-      reward: 35,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 42,
-      title: 'Marketing en LinkedIn',
-      description: 'Gestionar presencia en LinkedIn',
-      reward: 40,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 43,
-      title: 'Desarrollo de DEX',
-      description: 'Implementar exchange descentralizado',
-      reward: 0.08,
-      currency: 'ETH',
-      time: '20h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 44,
-      title: 'Diseño de Correos',
-      description: 'Crear templates para newsletter',
-      reward: 30,
-      currency: 'USDC',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Diseño'
-    },
-    {
-      id: 45,
-      title: 'Gestión de Telegram',
-      description: 'Administrar grupo de Telegram',
-      reward: 35,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 46,
-      title: 'Desarrollo de Lending Protocol',
-      description: 'Implementar protocolo de préstamos DeFi',
-      reward: 0.09,
-      currency: 'ETH',
-      time: '25h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 47,
-      title: 'Diseño de Infografías',
-      description: 'Crear infografías explicativas',
-      reward: 40,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 48,
-      title: 'Creación de Podcast',
-      description: 'Producir episodio de podcast sobre Web3',
-      reward: 65,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Contenido'
-    },
-    {
-      id: 49,
-      title: 'Desarrollo de Yield Farming',
-      description: 'Implementar estrategias de yield farming',
-      reward: 0.06,
-      currency: 'ETH',
-      time: '15h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 50,
-      title: 'Diseño de App Móvil',
-      description: 'Crear diseño para aplicación móvil',
-      reward: 0.03,
-      currency: 'ETH',
-      time: '8h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 51,
-      title: 'Marketing en Instagram',
-      description: 'Gestionar cuenta de Instagram',
-      reward: 45,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 52,
-      title: 'Desarrollo de NFT Marketplace',
-      description: 'Crear marketplace especializado en NFTs',
-      reward: 0.08,
-      currency: 'ETH',
-      time: '20h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 53,
-      title: 'Diseño de Banners',
-      description: 'Crear banners para redes sociales',
-      reward: 35,
-      currency: 'USDC',
-      time: '2h',
-      difficulty: 'Fácil',
-      category: 'Diseño'
-    },
-    {
-      id: 54,
-      title: 'Gestión de Reddit',
-      description: 'Moderar y gestionar subreddit',
-      reward: 40,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    },
-    {
-      id: 55,
-      title: 'Desarrollo de Oracle',
-      description: 'Implementar oracle descentralizado',
-      reward: 0.07,
-      currency: 'ETH',
-      time: '18h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 56,
-      title: 'Diseño de Merchandise',
-      description: 'Crear diseños para merchandising',
-      reward: 50,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 57,
-      title: 'Creación de Whitepaper',
-      description: 'Escribir whitepaper técnico',
-      reward: 0.05,
-      currency: 'ETH',
-      time: '10h',
-      difficulty: 'Difícil',
-      category: 'Contenido'
-    },
-    {
-      id: 58,
-      title: 'Desarrollo de Governance',
-      description: 'Implementar sistema de votación on-chain',
-      reward: 0.06,
-      currency: 'ETH',
-      time: '15h',
-      difficulty: 'Difícil',
-      category: 'Desarrollo'
-    },
-    {
-      id: 59,
-      title: 'Diseño de Avatares',
-      description: 'Crear colección de avatares personalizados',
-      reward: 45,
-      currency: 'USDC',
-      time: '3h',
-      difficulty: 'Intermedio',
-      category: 'Diseño'
-    },
-    {
-      id: 60,
-      title: 'Marketing en TikTok',
-      description: 'Crear y gestionar contenido en TikTok',
-      reward: 55,
-      currency: 'USDC',
-      time: '4h',
-      difficulty: 'Intermedio',
-      category: 'Marketing'
-    }
-  ];
   
-  // Datos de ejemplo para tareas en progreso
-  const tasksInProgress = [
-    {
-      id: 1,
-      title: 'Desarrollo de Smart Contract',
-      description: 'Crear un contrato inteligente para gestionar tokens NFT',
-      reward: 0.015,
-      currency: 'ETH',
-      timeLeft: '1h 30m',
-      progress: 65,
-      deadline: '2024-03-20',
-      category: 'Blockchain',
-      difficulty: 'dificil'
-    },
-    {
-      id: 2,
-      title: 'Diseño de UI para DApp',
-      description: 'Diseñar la interfaz de usuario para una aplicación descentralizada',
-      reward: 150,
-      currency: 'XLM',
-      timeLeft: '2h 15m',
-      progress: 40,
-      deadline: '2024-03-21',
-      category: 'Diseño',
-      difficulty: 'media'
-    }
-  ];
+  
   
   // Historial de transacciones de ejemplo
   const transactions = [
@@ -666,10 +94,16 @@ const Dashboard = () => {
   // Calcular ganancias totales
   const totalEarnings = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
   
+  // Función para filtrar tareas disponibles (excluye asignadas y aplica filtros de UI)
+  const filteredTasks = fetchedTasks
+    .filter(task => task.status !== 'assigned') // Excluir tareas asignadas
+    .filter(task => categoryFilter === 'all' || task.category.toLowerCase() === categoryFilter.toLowerCase())
+    .filter(task => difficultyFilter === 'all' || task.difficulty.toLowerCase() === difficultyFilter.toLowerCase());
+  
   // Estadísticas de ejemplo
   const stats = [
     { id: 1, title: 'Tareas Completadas', value: userData.tasksCompleted, icon: <FaTasks /> },
-    { id: 2, title: 'Tareas Disponibles', value: userData.tasksAvailable, icon: <FaTasks /> },
+    { id: 2, title: 'Tareas Disponibles', value: filteredTasks.length, icon: <FaTasks /> },
     { id: 3, title: 'Ganancias Totales', value: `$${totalEarnings.toFixed(2)}`, icon: <FaWallet /> },
     { id: 4, title: 'Nivel', value: userData.level, icon: <FaChartLine /> }
   ];
@@ -732,10 +166,195 @@ const Dashboard = () => {
     }
   ];
   
-  // Función para filtrar y ordenar tareas
-  const filteredTasks = tasks
-    .filter(task => categoryFilter === 'all' || task.category.toLowerCase() === categoryFilter.toLowerCase())
-    .filter(task => difficultyFilter === 'all' || task.difficulty.toLowerCase() === difficultyFilter.toLowerCase());
+  // --- Lógica para obtener tareas desde la API --- //
+  useEffect(() => {
+    if (activeTab === 'tasks') { // Cargar tareas solo cuando la pestaña 'tasks' está activa
+      const fetchTasks = async () => {
+        setLoadingTasks(true);
+        setTasksError('');
+        try {
+          const response = await axios.get(`${API_URL}/auth/get_tasks.php`);
+          if (Array.isArray(response.data)) {
+            setFetchedTasks(response.data); // Guardar las tareas en el estado
+          } else {
+            setTasksError('Formato de datos de tareas inesperado.');
+            setFetchedTasks([]); // Limpiar tareas si el formato es incorrecto
+          }
+        } catch (error: any) {
+          setTasksError('Error al cargar las tareas: ' + (error.response?.data?.message || error.message));
+          setFetchedTasks([]);
+        } finally {
+          setLoadingTasks(false);
+        }
+      };
+
+      fetchTasks();
+    }
+  }, [activeTab]); // Ejecutar este efecto cuando cambie la pestaña activa
+  // -------------------------------------------- //
+
+  // --- Lógica para obtener el conteo de tareas completadas desde la API --- //
+  useEffect(() => {
+    if (user?.id) { // Solo cargar si el usuario está logeado
+      const fetchCompletedTasksCount = async () => {
+        try {
+          const token = localStorage.getItem('token'); // Asume que el token se guarda aquí
+          if (!token) {
+            return;
+          }
+
+          const response = await axios.get(`${API_URL}/auth/get_completed_tasks_count.php`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (response.data && response.data.success) {
+            setCompletedTasksCount(response.data.completed_tasks_count);
+          }
+        } catch (error: any) {
+          console.error('Error al cargar el recuento de tareas completadas:', error);
+        }
+      };
+
+      fetchCompletedTasksCount();
+    }
+  }, [user?.id]); // Ejecutar este efecto cuando el user.id cambie (es decir, al logearse)
+  // -------------------------------------------- //
+
+  // --- Lógica para obtener tareas del usuario desde la API --- //
+  useEffect(() => {
+    if (activeTab === 'manage-tasks' && user?.id) { // Cargar tareas del usuario solo cuando la pestaña 'manage-tasks' está activa y el usuario está logeado
+      const fetchUserTasks = async () => {
+        setLoadingUserTasks(true);
+        setUserTasksError('');
+        try {
+          const response = await axios.get(`${API_URL}/auth/get_user_tasks.php?user_id=${user.id}`);
+          if (Array.isArray(response.data)) {
+            setUserTasks(response.data); // Guardar las tareas del usuario en el estado
+          } else {
+            setUserTasksError('Formato de datos de tareas del usuario inesperado.');
+            setUserTasks([]); // Limpiar tareas si el formato es incorrecto
+          }
+        } catch (error: any) {
+          setUserTasksError('Error al cargar las tareas del usuario: ' + (error.response?.data?.message || error.message));
+          setUserTasks([]);
+        } finally {
+          setLoadingUserTasks(false);
+        }
+      };
+
+      fetchUserTasks();
+    }
+  }, [activeTab, user?.id]); // Ejecutar este efecto cuando cambie la pestaña activa o el user.id
+  // -------------------------------------------- //
+
+  // --- Lógica para obtener tareas aceptadas por el usuario desde la API --- //
+  useEffect(() => {
+    console.log('DEBUG: Running fetchAcceptedTasks effect', { activeTab: activeTab, userId: user?.id });
+    if (activeTab === 'in-progress' && user?.id) { // Cargar tareas aceptadas solo cuando la pestaña 'in-progress' está activa y el usuario está logeado
+      const fetchAcceptedTasks = async () => {
+        setLoadingAcceptedTasks(true);
+        setAcceptedTasksError('');
+        try {
+          // Llamada al nuevo script de backend
+          const response = await axios.get(`${API_URL}/auth/get_accepted_tasks.php?user_id=${user.id}`);
+          console.log('DEBUG: Response from get_accepted_tasks.php', response.data);
+          if (Array.isArray(response.data)) {
+            setAcceptedTasks(response.data); // Guardar las tareas aceptadas en el estado
+            console.log("DEBUG: Tareas aceptadas cargadas:", response.data);
+          } else {
+            setAcceptedTasksError('Formato de datos de tareas aceptadas inesperado.');
+            setAcceptedTasks([]); // Limpiar tareas si el formato es incorrecto
+          }
+        } catch (error: any) {
+          setAcceptedTasksError('Error al cargar las tareas aceptadas: ' + (error.response?.data?.message || error.message));
+          setAcceptedTasks([]);
+        } finally {
+          setLoadingAcceptedTasks(false);
+        }
+      };
+
+      fetchAcceptedTasks();
+    }
+  }, [activeTab, user?.id]); // Ejecutar este efecto cuando cambie la pestaña activa o el user.id
+  // -------------------------------------------- //
+  
+  // Función para guardar cambios de configuración
+  const handleSaveChanges = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaveMessage('');
+    setSaveError('');
+    setSaving(true);
+    
+    if (!user?.id) {
+        setSaveError('Usuario no autenticado.');
+        setSaving(false);
+        return;
+    }
+
+    try {
+      if (!name || !email) {
+        setSaveError('El nombre y el correo electrónico son obligatorios.');
+        setSaving(false);
+        return;
+      }
+      if (newPassword && newPassword !== confirmPassword) {
+        setSaveError('Las contraseñas nuevas no coinciden.');
+        setSaving(false);
+        return;
+      }
+      // Llamada a la API para actualizar datos
+      const response = await axios.post(`${API_URL}/auth/update_user.php`, {
+        id: user.id, // Usar user.id directamente ya que se validó arriba
+        name,
+        email,
+        currentPassword,
+        newPassword
+      });
+      // Actualizar localStorage si el nombre o email cambian
+      if (response.data && response.data.user) {
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // También actualiza los estados locales si la API devuelve los nuevos datos
+        setName(response.data.user.username || '');
+        setEmail(response.data.user.email || '');
+      }
+      setSaveMessage('¡Datos actualizados correctamente!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) { // Especificar tipo 'any' para el error
+      setSaveError(error.response?.data?.message || 'Error al guardar los cambios.');
+    } finally {
+      setSaving(false);
+    }
+  };
+  
+  // Función para navegar a la página de creación de tarea
+  const handleCreateTaskClick = () => {
+    navigate('/create-task');
+  };
+
+  // Función para navegar a la página de aplicación de tarea
+  const handleApplyTaskClick = (taskId: number) => {
+    navigate(`/apply-task/${taskId}`);
+  };
+  
+  // Función para navegar a la página de supervisión (nueva)
+  const handleSuperviseTaskClick = (taskId: number, acceptedApplicantId: number | null | undefined) => {
+      console.log('DEBUG: handleSuperviseTaskClick called', { taskId, acceptedApplicantId });
+      // TODO: Define la ruta correcta a tu página de supervisión/comunicación
+      // Asegúrate de pasar ambos IDs: el de la tarea y el del aplicante aceptado
+      if (acceptedApplicantId) {
+           console.log('DEBUG: Navigating to supervise-task', { taskId, acceptedApplicantId });
+           navigate(`/supervise-task/${taskId}/${acceptedApplicantId}`);
+      } else {
+           // Manejar el caso (poco probable si has_accepted_proposal es true) donde no hay ID de aplicante aceptado
+           console.error(`No se encontró el ID del aplicante aceptado para la tarea ${taskId}`);
+           // Opcional: Mostrar un mensaje al usuario
+           // alert('No se pudo encontrar al trabajador asignado para esta tarea.');
+      }
+  };
   
   return (
     <div className="dashboard">
@@ -752,7 +371,11 @@ const Dashboard = () => {
             <FaUser />
           </div>
           <div className="user-info">
-            <h3>{userData.name}</h3>
+            <Link to="/dashboard" className="user-dashboard-link">
+              <h3 style={{ color: "#fff", textDecoration: "underline", cursor: "pointer" }}>
+                {userData.name}
+              </h3>
+            </Link>
             <div className="user-level">
               <span>Nivel {userData.level}</span>
               <div className="level-progress">
@@ -773,6 +396,10 @@ const Dashboard = () => {
             <li className={activeTab === 'in-progress' ? 'active' : ''} onClick={() => setActiveTab('in-progress')}>
               <FaTasks /> <span>En Progreso</span>
             </li>
+             <li className={activeTab === 'manage-tasks' ? 'active' : ''} onClick={() => setActiveTab('manage-tasks')}>
+              <FaTasks />
+              <span>Administrar Tareas</span>
+            </li>
             <li className={activeTab === 'wallet' ? 'active' : ''} onClick={() => setActiveTab('wallet')}>
               <FaWallet /> <span>Billetera</span>
             </li>
@@ -788,6 +415,7 @@ const Dashboard = () => {
             <li className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
               <FaCog /> <span>Configuración</span>
             </li>
+           
           </ul>
         </nav>
         
@@ -808,6 +436,7 @@ const Dashboard = () => {
             {activeTab === 'notifications' && 'Notificaciones'}
             {activeTab === 'settings' && 'Configuración'}
             {activeTab === 'in-progress' && 'Tareas en Progreso'}
+             {activeTab === 'manage-tasks' && 'Administrar Tareas'} {/* Añadir título para esta pestaña */}
           </h1>
           <div className="header-actions">
             <button 
@@ -844,7 +473,7 @@ const Dashboard = () => {
             ))}
           </div>
           
-          {/* Tasks Tab CODE OWNER: BRUNO MIRANDA*/}
+          {/* Tasks Tab */}
           {activeTab === 'tasks' && (
             <div className="tasks-container">
               <div className="tasks-header">
@@ -887,7 +516,12 @@ const Dashboard = () => {
               </div>
               
               <div className="tasks-grid">
-                {filteredTasks.map(task => (
+                {loadingTasks && <p>Cargando tareas...</p>}
+                {tasksError && <p className="error-message">{tasksError}</p>}
+                {!loadingTasks && !tasksError && filteredTasks.length === 0 && (
+                  <p>No hay tareas disponibles en este momento o con los filtros aplicados.</p>
+                )}
+                {!loadingTasks && !tasksError && filteredTasks.map(task => (
                   <div key={task.id} className="task-card">
                     <div className="task-header">
                       <h3>{task.title}</h3>
@@ -895,18 +529,20 @@ const Dashboard = () => {
                         {task.difficulty}
                       </span>
                     </div>
-                    <p className="task-description">{task.description}</p>
+                    <p className="task-description">{task.subtitle}</p>
                     <div className="task-details">
                       <div className="task-detail">
                         <span className="task-detail-label">Recompensa</span>
-                        <span className="task-detail-value">{task.reward} {task.currency}</span>
+                        <span className="task-detail-value">{task.price} {task.currency}</span>
                       </div>
                       <div className="task-detail">
-                        <span className="task-detail-label">Tiempo</span>
-                        <span className="task-detail-value">{task.time}</span>
+                        <span className="task-detail-label">Creador</span>
+                        <span className="task-detail-value">{task.creator_username}</span>
                       </div>
                     </div>
-                    <button className="task-button">Aplicar</button>
+                    <button className="task-button" onClick={() => handleApplyTaskClick(task.id)}>
+                      Aplicar
+                    </button>
                   </div>
                 ))}
               </div>
@@ -1022,20 +658,32 @@ const Dashboard = () => {
             </div>
           )}
           
-          {/* Settings Tab X_CODE OWNER: BRUNO MIRANDA*/}
+          {/* Settings Tab */}
           {activeTab === 'settings' && (
             <div className="settings-container">
               <h2>Configuración de la Cuenta</h2>
-              <div className="settings-form">
+              <form className="settings-form" onSubmit={handleSaveChanges}>
                 <div className="settings-section">
                   <h3>Información Personal</h3>
                   <div className="form-group">
                     <label htmlFor="name">Nombre</label>
-                    <input type="text" id="name" defaultValue={userData.name} />
+                    <input
+                      type="text"
+                      id="name"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="email">Correo Electrónico</label>
-                    <input type="email" id="email" defaultValue="usuario@ejemplo.com" />
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
                 
@@ -1062,22 +710,41 @@ const Dashboard = () => {
                   <h3>Seguridad</h3>
                   <div className="form-group">
                     <label htmlFor="current-password">Contraseña Actual</label>
-                    <input type="password" id="current-password" />
+                    <input
+                      type="password"
+                      id="current-password"
+                      value={currentPassword}
+                      onChange={e => setCurrentPassword(e.target.value)}
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="new-password">Nueva Contraseña</label>
-                    <input type="password" id="new-password" />
+                    <input
+                      type="password"
+                      id="new-password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="confirm-password">Confirmar Contraseña</label>
-                    <input type="password" id="confirm-password" />
+                    <input
+                      type="password"
+                      id="confirm-password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                    />
                   </div>
                 </div>
                 
                 <div className="settings-actions">
-                  <button className="settings-button">Guardar Cambios</button>
+                  <button className="settings-button" type="submit" disabled={saving}>
+                    {saving ? 'Guardando...' : 'Guardar Cambios'}
+                  </button>
+                  {saveMessage && <div className="save-success">{saveMessage}</div>}
+                  {saveError && <div className="save-error">{saveError}</div>}
                 </div>
-              </div>
+              </form>
             </div>
           )}
           
@@ -1099,46 +766,120 @@ const Dashboard = () => {
                 </select>
               </div>
               
-              <div className="tasks-in-progress-grid">
-                {tasksInProgress
-                  .filter(task => categoryFilter === 'all' || task.category === categoryFilter)
+              <div className="tasks-grid">
+                {loadingAcceptedTasks && <p>Cargando tareas aceptadas...</p>}
+                {acceptedTasksError && <p className="error-message">{acceptedTasksError}</p>}
+                {!loadingAcceptedTasks && !acceptedTasksError && acceptedTasks.length === 0 && (
+                  <p>No tienes tareas en progreso en este momento.</p>
+                )}
+                {!loadingAcceptedTasks && !acceptedTasksError && acceptedTasks.length > 0 && acceptedTasks
+                  .filter(task => categoryFilter === 'all' || task.category.toLowerCase() === categoryFilter.toLowerCase())
                   .map(task => (
-                    <div key={task.id} className="task-card-progress">
+                    <div key={task.id} className="task-card">
                       <div className="task-header">
                         <h3>{task.title}</h3>
-                        <span className={`difficulty-tag ${task.difficulty}`}>
+                        {task.difficulty && (
+                          <span className={`task-difficulty ${task.difficulty.toLowerCase()}`}>
                           {task.difficulty}
                         </span>
+                        )}
                       </div>
-                      <p>{task.description}</p>
-                      <div className="progress-section">
-                        <div className="progress-info">
-                          <span>Progreso</span>
-                          <span>{task.progress}%</span>
+                      <p className="task-description">{task.subtitle}</p>
+                      <div className="task-details">
+                        {task.price && task.currency && (
+                          <div className="task-detail">
+                            <span className="task-detail-label">Recompensa</span>
+                            <span className="task-detail-value">{task.price} {task.currency}</span>
                         </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill"
-                            style={{ width: `${task.progress}%` }}
-                          ></div>
+                        )}
+                        {task.creator_username && (
+                          <div className="task-detail">
+                            <span className="task-detail-label">Creador</span>
+                            <span className="task-detail-value">{task.creator_username}</span>
                         </div>
+                        )}
                       </div>
-                      <div className="task-footer">
-                        <div className="reward-info">
-                          <span className="reward-amount">{task.reward}</span>
-                          <span className="reward-currency">{task.currency}</span>
+                      {/* Botón de acción para Tareas en Progreso (visible para el trabajador aceptado) */}
+                       {/* Comprobamos si el usuario logueado es el trabajador aceptado para esta tarea */}
+                       <button
+                           className="task-button btn-primary" // Puedes usar una clase de botón existente o definir una nueva
+                           onClick={() => {
+                               console.log('DEBUG: Trabajar button clicked for task', task.id);
+                               console.log('DEBUG: Task object for Trabajar button', task);
+                               handleSuperviseTaskClick(task.id, task.accepted_applicant_id);
+                           }}
+                       >
+                           Trabajar
+                       </button>
                         </div>
-                        <div className="action-buttons">
-                          <button className="btn-primary">Continuar</button>
-                          <button className="btn-secondary">Entregar</button>
+                  ))}
                         </div>
+            </div>
+          )}
+          
+          {/* Nueva sección para Administrar Tareas */}
+          {activeTab === 'manage-tasks' && (
+            <div className="manage-tasks-container">
+              <div className="section-header">
+                <h2>Administrar Tareas Creadas</h2>
+                <button className="create-task-button" onClick={handleCreateTaskClick}>
+                  <FaPlus />
+                  <h3>Crear Nueva Tarea</h3>
+                </button>
+              </div>
+              {/* Aquí se listarán las tareas creadas por el usuario */}
+              {loadingUserTasks && <p>Cargando tus tareas...</p>}
+              {userTasksError && <p className="error-message">{userTasksError}</p>}
+              {!loadingUserTasks && userTasks.length === 0 && !userTasksError && <p>No has creado ninguna tarea todavía.</p>}
+
+              {!loadingUserTasks && userTasks.length > 0 && (
+                <div className="user-tasks-list">
+                  {userTasks.map(task => (
+                    <div key={task.id} className="user-task-item">
+                      <h3>{task.title}</h3>
+                      <p>{task.subtitle}</p>
+                      {/* Mostrar el número de propuestas */}
+                      <div className="proposal-count">
+                        Propuestas: {task.proposal_count !== undefined ? task.proposal_count : 'Cargando...'}
+                      </div>
+                      {/* Botones de acción (Editar, Ver Propuestas, etc.) - **Corregido** */}
+                      <div className="task-actions">
+                         {/* Lógica condicional para mostrar el botón "Supervisar" o "Ver Propuestas" */}
+                         {task.has_accepted_proposal ? (
+                             // Mostrar botón Supervisar si hay una propuesta aceptada
+                             <button
+                                 className="btn-primary" // O la clase que prefieras para este botón
+                                 onClick={() => handleSuperviseTaskClick(task.id, task.accepted_applicant_id)}
+                             >
+                                 Supervisar
+                             </button>
+                         ) : (
+                             // Mostrar botón Ver Propuestas si no hay propuestas aceptadas
+                             <button
+                                 className="btn-secondary"
+                                 onClick={() => navigate(`/proposals/${task.id}`)}
+                             >
+                                 Ver Propuestas ({task.proposal_count !== undefined ? task.proposal_count : 0})
+                             </button>
+                         )}
+                         {/* Botón de Editar Tarea (opcional, para más tarde) */}
+                         {/* <button className="btn-secondary">Editar</button> */}
                       </div>
                     </div>
                   ))}
               </div>
+              )}
+
             </div>
           )}
         </div>
+        
+        {/* Botón flotante para crear tarea (solo en la pestaña Tareas) */}
+        {activeTab === 'tasks' && (
+          <button className="create-task-button" onClick={handleCreateTaskClick}>
+           <FaPlus />
+          </button>
+        )}
       </div>
     </div>
   );

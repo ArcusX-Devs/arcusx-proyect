@@ -2,29 +2,32 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import '../css/Login.css';
+import { authService } from '../services/authService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     
-    // Validación básica
-    if (!email || !password) {
-      setError('Por favor, completa todos los campos');
-      return;
-    }
-    
-    // Aquí iría la lógica de autenticación real
-    // Por ahora, simulamos un inicio de sesión exitoso
-    if (email === 'test@test.cl' && password === '1234') {
-      // Redirigir al dashboard después del inicio de sesión exitoso
+    try {
+      if (!email || !password) {
+        setError('Por favor, completa todos los campos');
+        return;
+      }
+
+      await authService.login({ email, password });
       navigate('/dashboard');
-    } else {
-      setError('Credenciales incorrectas');
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,7 +51,7 @@ const Login = () => {
         
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Correo Electrónico</label>
+            <label htmlFor="email"> <h4> Correo Electrónico </h4> </label>
             <input
               type="email"
               id="email"
@@ -56,11 +59,12 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@email.com"
               required
+              disabled={loading}
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password"> <h4> Contraseña </h4> </label>
             <input
               type="password"
               id="password"
@@ -68,6 +72,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              disabled={loading}
             />
           </div>
           
@@ -81,8 +86,8 @@ const Login = () => {
             </Link>
           </div>
           
-          <button type="submit" className="login-button">
-            Iniciar Sesión
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
         </form>
         
