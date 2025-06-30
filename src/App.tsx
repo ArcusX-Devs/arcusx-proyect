@@ -10,6 +10,7 @@ import CreateTask from './components/CreateTask';
 import ApplyTask from './components/ApplyTask';
 import ProposalReview from './components/ProposalReview';
 import SuperviseTask from './components/SuperviseTask';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -38,11 +39,11 @@ function App() {
             } />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create-task" element={<CreateTask />} />
-            <Route path="/apply-task/:taskId" element={<ApplyTask />} />
-            <Route path="/proposals/:taskId" element={<ProposalReview />} />
-            <Route path="/supervise-task/:taskId/:acceptedApplicantId" element={<SuperviseTask />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/create-task" element={<ProtectedRoute><CreateTask /></ProtectedRoute>} />
+            <Route path="/apply-task/:taskId" element={<ProtectedRoute><ApplyTask /></ProtectedRoute>} />
+            <Route path="/proposals/:taskId" element={<ProtectedRoute><ProposalReview /></ProtectedRoute>} />
+            <Route path="/supervise-task/:taskId/:acceptedApplicantId" element={<ProtectedRoute><SuperviseTask /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

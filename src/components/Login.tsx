@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import '../css/Login.css';
-import { authService } from '../services/authService';
+import { useAuth } from '../hooks/useAuth';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +10,15 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, login } = useAuth();
+
+  // Verificar si el usuario ya está autenticado al cargar el componente
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Si ya está autenticado, redirigir al dashboard
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +31,7 @@ const Login = () => {
         return;
       }
 
-      await authService.login({ email, password });
+      await login(email, password);
       navigate('/dashboard');
     } catch (error: any) {
       setError(error.response?.data?.message || 'Error al iniciar sesión');
@@ -30,6 +39,20 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (isAuthenticated === null) {
+    return (
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-header">
+            <div className="login-logo">ArcusX</div>
+            <h2>Verificando sesión...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">
@@ -99,8 +122,7 @@ const Login = () => {
             </Link>
           </p>
 
-          <br></br>
-          <p>User: test@test.cl | Pass: 1234</p>
+      
         </div>
       </div>
     </div>

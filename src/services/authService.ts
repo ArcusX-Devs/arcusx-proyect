@@ -12,6 +12,17 @@ interface RegisterData {
   password: string;
 }
 
+// Función para verificar si un token JWT ha expirado
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    return payload.exp < currentTime;
+  } catch (error) {
+    return true; // Si hay error al decodificar, considerar como expirado
+  }
+};
+
 export const authService = {
   async login(data: LoginData) {
     try {
@@ -41,11 +52,28 @@ export const authService = {
   },
 
   isAuthenticated() {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return false;
+    }
+    
+    // Verificar si el token ha expirado
+    if (isTokenExpired(token)) {
+      // Si el token ha expirado, limpiar localStorage
+      this.logout();
+      return false;
+    }
+    
+    return true;
   },
 
   getToken() {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (token && isTokenExpired(token)) {
+      this.logout();
+      return null;
+    }
+    return token;
   },
 
   getUser() {

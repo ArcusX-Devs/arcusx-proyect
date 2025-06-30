@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../config/database';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -26,7 +26,6 @@ interface TaskData {
 
 const ProposalReview = () => {
     const { taskId } = useParams<{ taskId: string }>(); // Obtener el ID de la tarea de la URL
-    const navigate = useNavigate();
 
     const [task, setTask] = useState<TaskData | null>(null);
     const [proposals, setProposals] = useState<ProposalData[]>([]);

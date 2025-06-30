@@ -7,6 +7,7 @@ import arcusLogo from './images/arcus-logo.png';
 import axios from 'axios';
 import { API_URL } from './config/database';
 import React from 'react';
+import { useAuth } from './hooks/useAuth';
 
 interface UserData {
   id: number;
@@ -67,32 +68,22 @@ const Dashboard = () => {
   const [saveError, setSaveError] = useState<string>('');
   
   const navigate = useNavigate();
+  const { logout } = useAuth();
   
   const userData = {
     name: name,
-    level: 3,
+    level: 0,
     experience: 75,
     tasksCompleted: completedTasksCount,
     tasksAvailable: 60,
     notifications: 3,
-    totalEarnings: 33.75
+    totalEarnings: 0
   };
   
-  // Tareas de ejemplo
-  
-  
-  
   // Historial de transacciones de ejemplo
-  const transactions = [
-    { id: 1, type: 'Ingreso', amount: 8.25, date: '2023-04-05', task: 'Clasificación de imágenes', status: 'Completado' },
-    { id: 2, type: 'Ingreso', amount: 7.50, date: '2023-04-04', task: 'Traducción de textos', status: 'Completado' },
-    { id: 3, type: 'Ingreso', amount: 6.75, date: '2023-04-03', task: 'Etiquetado de datos', status: 'Completado' },
-    { id: 4, type: 'Ingreso', amount: 5.25, date: '2023-04-02', task: 'Verificación de información', status: 'Completado' },
-    { id: 5, type: 'Ingreso', amount: 6.00, date: '2023-04-01', task: 'Moderación de contenido', status: 'Completado' }
-  ];
-  
+  const transactions: any[] = [];
   // Calcular ganancias totales
-  const totalEarnings = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  const totalEarnings = 0;
   
   // Función para filtrar tareas disponibles (excluye asignadas y aplica filtros de UI)
   const filteredTasks = fetchedTasks
@@ -106,64 +97,6 @@ const Dashboard = () => {
     { id: 2, title: 'Tareas Disponibles', value: filteredTasks.length, icon: <FaTasks /> },
     { id: 3, title: 'Ganancias Totales', value: `$${totalEarnings.toFixed(2)}`, icon: <FaWallet /> },
     { id: 4, title: 'Nivel', value: userData.level, icon: <FaChartLine /> }
-  ];
-  
-  // Datos de ejemplo para notificaciones
-  const notifications = [
-    {
-      id: 1,
-      type: 'task',
-      title: 'Nueva tarea disponible',
-      description: 'Se ha publicado una nueva tarea de Desarrollo de Smart Contract con una recompensa de 0.015 ETH.',
-      time: 'Hace 2 horas',
-      icon: <FaTasks />,
-      unread: true
-    },
-    {
-      id: 2,
-      type: 'payment',
-      title: 'Pago recibido',
-      description: `Has recibido $${transactions[0].amount.toFixed(2)} por completar la tarea de ${transactions[0].task}.`,
-      time: 'Hace 1 día',
-      icon: <FaWallet />,
-      unread: true
-    },
-    {
-      id: 3,
-      type: 'payment',
-      title: 'Pago recibido',
-      description: `Has recibido $${transactions[1].amount.toFixed(2)} por completar la tarea de ${transactions[1].task}.`,
-      time: 'Hace 2 días',
-      icon: <FaWallet />,
-      unread: false
-    },
-    {
-      id: 4,
-      type: 'payment',
-      title: 'Pago recibido',
-      description: `Has recibido $${transactions[2].amount.toFixed(2)} por completar la tarea de ${transactions[2].task}.`,
-      time: 'Hace 3 días',
-      icon: <FaWallet />,
-      unread: false
-    },
-    {
-      id: 5,
-      type: 'payment',
-      title: 'Pago recibido',
-      description: `Has recibido $${transactions[3].amount.toFixed(2)} por completar la tarea de ${transactions[3].task}.`,
-      time: 'Hace 4 días',
-      icon: <FaWallet />,
-      unread: false
-    },
-    {
-      id: 6,
-      type: 'payment',
-      title: 'Pago recibido',
-      description: `Has recibido $${transactions[4].amount.toFixed(2)} por completar la tarea de ${transactions[4].task}.`,
-      time: 'Hace 5 días',
-      icon: <FaWallet />,
-      unread: false
-    }
   ];
   
   // --- Lógica para obtener tareas desde la API --- //
@@ -356,6 +289,11 @@ const Dashboard = () => {
       }
   };
   
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+  
   return (
     <div className="dashboard">
       {/* Sidebar */}
@@ -420,9 +358,9 @@ const Dashboard = () => {
         </nav>
         
         <div className="sidebar-footer">
-          <Link to="/" className="logout-button">
+          <button className="logout-button" onClick={handleLogout}>
             <FaSignOutAlt /> <span>Cerrar Sesión</span>
-          </Link>
+          </button>
         </div>
       </div>
       
@@ -642,18 +580,7 @@ const Dashboard = () => {
                 </div>
                   </div>
               <div className="notifications-list">
-                {notifications.map((notification) => (
-                  <div 
-                    key={notification.id} 
-                    className={`notification-item ${!notification.unread ? 'unread' : ''}`}
-                  >
-                    <div className="notification-header">
-                      <h3>{notification.title}</h3>
-                      <span className="notification-time">{notification.time}</span>
-                  </div>
-                    <p className="notification-description">{notification.description}</p>
-                  </div>
-                ))}
+                {/* Eliminé el array de notificaciones y referencias a notificaciones */}
               </div>
             </div>
           )}

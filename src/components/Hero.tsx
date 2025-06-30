@@ -467,19 +467,19 @@ const Hero = () => {
             <div className="footer-section">
               <h4>Plataforma</h4>
               <ul>
-                <li><Link to="/how-it-works">Cómo Funciona</Link></li>
-                <li><Link to="/tasks">Tareas Disponibles</Link></li>
-                <li><Link to="/pricing">Precios</Link></li>
-                <li><Link to="/enterprise">Empresas</Link></li>
+                <li><Link to="https://docs.arcusx.one/getting-started/quickstart">Cómo Funciona</Link></li>
+                <li><Link to="/dashboard">Tareas Disponibles</Link></li>
+                <li><Link to="https://docs.arcusx.one/getting-started/publish-your-docs">Comisiones</Link></li>
+               
               </ul>
             </div>
             <div className="footer-section">
               <h4>Recursos</h4>
               <ul>
                
-                <li><Link to="/guides">Guías</Link></li>
+                <li><Link to="https://docs.arcusx.one/">Guía</Link></li>
                 <li><Link to="/tutorials">Tutoriales</Link></li>
-                <li><Link to="/faq">FAQ</Link></li>
+                <li><Link to="#faq">FAQ</Link></li>
               </ul>
             </div>
             <div className="footer-section">

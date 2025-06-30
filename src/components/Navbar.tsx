@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../css/Navbar.css';
 import logo from '../images/arcus-logo.png';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,6 +37,12 @@ const Navbar = () => {
       element.scrollIntoView({ behavior: 'smooth' });
       closeMenu();
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    closeMenu();
   };
 
   return (
@@ -65,12 +74,26 @@ const Navbar = () => {
           <a onClick={() => scrollToSection('faq')} className="nav-link">
             FAQ
           </a>
+          
+          {isAuthenticated ? (
+            <>
+              <Link to="/dashboard" className="nav-button login" onClick={closeMenu}>
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="nav-button register">
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <>
           <Link to="/login" className="nav-button login" onClick={closeMenu}>
             Iniciar Sesión
           </Link>
           <Link to="/register" className="nav-button register" onClick={closeMenu}>
             Registrarse
           </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

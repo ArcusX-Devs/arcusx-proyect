@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
 import { API_URL } from '../config/database';
 import '../css/ApplyTask.css'; // Necesitas crear este archivo CSS
-
-interface UserData {
-  id: number;
-  username: string;
-  email: string;
-}
 
 interface TaskData {
   id: number;
@@ -28,7 +22,6 @@ const ApplyTask = () => {
   const [task, setTask] = useState<TaskData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   // Estado para el formulario de aplicación
   const [applicationMessage, setApplicationMessage] = useState('');
