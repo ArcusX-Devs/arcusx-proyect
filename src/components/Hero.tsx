@@ -333,7 +333,7 @@ const Hero = () => {
                 </div>
                 
                 <div className="member-info">
-                  <h3>Bruno Miranda</h3>
+                  <h3>Bruno Miranda E.</h3>
                   <p className="member-role">CEO & Fundador</p>
                   <p className="member-bio">Desarrollador full-stack con amplia experiencia en Web3 y liderazgo de equipos tecnológicos.</p>
                   
@@ -478,17 +478,17 @@ const Hero = () => {
               <ul>
                
                 <li><Link to="https://docs.arcusx.one/">Guía</Link></li>
-                <li><Link to="/tutorials">Tutoriales</Link></li>
-                <li><Link to="#faq">FAQ</Link></li>
+                <li><Link to="https://docs.arcusx.one/">Tutoriales</Link></li>
+                <li><Link to="https://docs.arcusx.one/community/faq">FAQ</Link></li>
               </ul>
             </div>
             <div className="footer-section">
               <h4>Legal</h4>
               <ul>
-                <li><Link to="/privacy">Privacidad</Link></li>
-                <li><Link to="/terms">Términos</Link></li>
-                <li><Link to="/security">Seguridad</Link></li>
-                <li><Link to="/compliance">Compliance</Link></li>
+                <li><Link to="https://docs.arcusx.one/legal/privacy-policy">Privacidad</Link></li>
+                <li><Link to="https://docs.arcusx.one/legal/terms-and-conditions">Términos</Link></li>
+                <li><Link to="https://docs.arcusx.one/legal/security">Seguridad</Link></li>
+                <li><Link to="https://docs.arcusx.one/legal/compliance">Compliance</Link></li>
               </ul>
             </div>
           </div>
